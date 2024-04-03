@@ -1,0 +1,56 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h1 class="mb-4">Settings: Dr. Pepper</h1>
+
+<form action="" method="get" class="w-100 d-flex flex-column gap-3">
+    <div class="row">
+        <div class="col-3">
+            <label for="input-text" class="col-form-label">Login</label>
+        </div>
+        <div class="col-7">
+            <input type="text" id="input-text" class="form-control" maxlength="20">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-3">
+            <label for="input-text" class="col-form-label">Email</label>
+        </div>
+        <div class="col-7">
+            <input type="email" id="input-text" class="form-control" maxlength="20">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-3">
+            <label for="input-text" class="col-form-label">Nickname</label>
+        </div>
+        <div class="col-7">
+            <input type="text" id="input-text" class="form-control" maxlength="20">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-3">
+            <label for="input-text" class="col-form-label">Avatar</label>
+        </div>
+        <div class="col-7 d-flex flex-column gap-2">
+            <div class="border ratio ratio-1x1 w-50 m-0">
+                <img class="w-100 h-100" src="{% static profile_info.avatar %}" alt="avatar"/>
+            </div>
+            <input type="file" id="input-text" class="form-control">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-7">
+            <button type="submit" class="btn btn-outline-primary col-3">Save</button>
+        </div>
+    </div>
+
+</form>
+{% endblock %}

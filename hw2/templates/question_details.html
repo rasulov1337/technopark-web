@@ -1,0 +1,43 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+    <article class="cardmb-3 w-100">
+        <div class="row g-0">
+            <div class="col-3 p-2 me-3">
+                <div class="border w-100 mb-3 ratio ratio-1x1">
+                    <img src="{{ question.picture }}" class="img-fluid rounded-start" alt="avatar"/>
+                </div>
+                <div class="input-group flex-nowrap w-50">
+                    <input type="number" value="{{ question.score }}" class="form-control"/>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card-body mt-2">
+                    <h3 class="card-title">{{ question.title }}</h3>
+                    <p class="card-text">
+                        {{ question.text }}
+                    </p>
+                    <div class="col-8">
+                        <span>Tags:</span>
+                        {% for tag in question.tags %}
+                        <a href="{% url "tag" tag %}">{{ tag }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+    <hr>
+
+    {% for answer in answers %}
+        {% include "layouts/answer.html" with item=answer %}
+    {% endfor %}
+
+    <hr class="mt-0">
+
+    <textarea class="form-control mb-2" placeholder="Enter your answer here..."></textarea>
+    <button class="btn btn-secondary">Answer</button>
+
+    {% include 'layouts/pagination.html' with page_obj=answers %}
+{% endblock %}

@@ -1,0 +1,30 @@
+{% load static %}
+<article class="card mb-3 w-100">
+    <div class="row g-0">
+        <div class="col-2 p-2">
+            <div class="border mb-3 ratio ratio-1x1">
+                <img src="{% static item.picture %}" class="img-fluid rounded-start" alt="avatar"/>
+            </div>
+            <div class="input-group flex-nowrap w-75">
+                <input type="number" value="{{ item.score }}" class="form-control"/>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <a href="{% url "question" item.id %}">{{ item.title }}</a>
+                </h5>
+                <p class="card-text">{{ item.text }}</p>
+                <div class="row">
+                    <a class="col-3" href="{% url "question" item.id %}">answers ({{ item.number_of_answers }})</a>
+                    <div class="col-8">
+                        <span>Tags:</span>
+                        {% for i in item.tags %}
+                            <a href="{% url "tag" i %}">{{ i }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>

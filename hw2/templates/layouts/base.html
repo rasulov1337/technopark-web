@@ -1,0 +1,91 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en" class="h-100">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Technopark WEB 1 semester</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"/>
+</head>
+
+<body class="h-100 d-flex flex-column">
+<nav class="navbar bg-body-tertiary">
+    <div class="container-lg">
+        <a class="navbar-brand fs-3" href='{% url 'index' %}'>AskMe</a>
+        <div class="d-flex gap-2">
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
+            </form>
+            <a href="{% url 'ask' %}">
+                <button class="btn btn-outline-success" type="submit">ASK!</button>
+            </a>
+        </div>
+
+        <div class="d-flex justify-content-between gap-3">
+            <!-- <div>
+                <a href="/settings.html">log in</a>
+                <a href="/logout.html">register</a>
+            </div>  -->
+
+            <div class="border">
+                <img src="{% static "img/avatar.png" %}" width="50" height="50"/>
+            </div>
+            <div class="d-flex flex-column justify-content-between">
+                <div>Dr. Pepper</div>
+                <div>
+                    <a href="{% url 'settings' %}">Settings</a>
+                    <a href="{% url 'logout' %}">Log out</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+<hr class="m-0">
+
+<main class="container-fluid container-lg mt-3" style="flex: 1 0 auto">
+
+    <div class="row">
+        <div class="col-8">
+            {% block content %}
+            {% endblock %}
+        </div>
+        <div class="col-4">
+            <h3>Popular Tags</h3>
+            <div class="row">
+                <div class="col">
+                    <span class="badge text-bg-primary">perl</span>
+                    <span class="badge text-bg-secondary">python</span>
+                    <span class="badge text-bg-success">technopark</span>
+                    <span class="badge text-bg-danger">mysql</span>
+                    <span class="badge text-bg-warning">postgresql</span>
+                    <span class="badge text-bg-info">django</span>
+                    <span class="badge text-bg-light">arc browser</span>
+                    <span class="badge text-bg-dark">linux</span>
+                </div>
+            </div>
+            <h3 class="mt-5">Best Members</h3>
+            <div>
+                <a href="/member.html" class="d-block">Mr. Freeman</a>
+                <a href="/member.html" class="d-block">Dr. House</a>
+                <a href="/member.html" class="d-block">Bender</a>
+                <a href="/member.html" class="d-block">Queen Victoria</a>
+                <a href="/member.html" class="d-block">V. Pupkin</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer style="flex: 0 0 auto" class="footer mt-3 py-3 bg-light border-top">
+    <div class="container">
+        <span class="text-muted">Technopark Semester Uno. Web.</span>
+    </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
