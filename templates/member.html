@@ -1,0 +1,59 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <h1 class="mb-4">Profile: {{ profile.nickname }}</h1>
+
+    <form action="" method="get" class="w-100 d-flex flex-column gap-3">
+        <div class="row">
+            <div class="col-3">
+                <label for="input-text" class="col-form-label">Nickname</label>
+            </div>
+            <div class="col-7">
+                <input type="text" id="input-text" class="form-control" maxlength="20" disabled
+                       value="{{ profile.nickname }}">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-3">
+                <label for="input-text" class="col-form-label">Avatar</label>
+            </div>
+            <div class="col-7 d-flex flex-column gap-2">
+                <div class="border ratio ratio-1x1 w-50 m-0">
+                    <img class="w-100 h-100" src="{% static profile.avatar_img %}" alt="avatar">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-3">
+                <label for="input-text" class="col-form-label">Given answers</label>
+            </div>
+            <div class="col-7 d-flex flex-column gap-2">
+                {{ profile.answers_counter }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-3">
+                <label for="input-text" class="col-form-label">Asked questions:</label>
+            </div>
+            <div class="col-7 d-flex flex-column gap-2">
+                {{ profile.questions_counter }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-3">
+                <label for="input-text" class="col-form-label">Score</label>
+            </div>
+            <div class="col-7 d-flex flex-column gap-2">
+                {{ profile.score }}
+            </div>
+        </div>
+
+
+    </form>
+{% endblock %}
