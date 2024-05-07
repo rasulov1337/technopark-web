@@ -27,7 +27,7 @@ def paginate(objects_list, request, per_page=5):
 
 
 def index(request):
-    page_object = paginate(Question.objects.all(), request)
+    page_object = paginate(Question.objects.new(), request)
 
     return render(request, 'index.html', {
         'questions': page_object,
