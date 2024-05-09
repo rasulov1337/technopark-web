@@ -21,6 +21,9 @@ class ProfileManager(models.Manager):
     def best(self):
         return self.all().order_by('-score')[:5]
 
+    def get_by_nickname(self, nickname):
+        return self.get(nickname=nickname)
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -70,7 +73,7 @@ class Question(models.Model):
     objects = QuestionManager()
 
     def __str__(self):
-        return self.text + ' ' + self.get_status_display()
+        return self.title + ' ' + self.get_status_display()
 
 
 class Answer(models.Model):

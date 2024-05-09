@@ -25,21 +25,29 @@
         </div>
 
         <div class="d-flex justify-content-between gap-3">
-            <!-- <div>
-                <a href="/settings.html">log in</a>
-                <a href="/logout.html">register</a>
-            </div>  -->
 
-            <div class="border">
-                <img src="{% static "img/avatar.png" %}" width="50" height="50"/>
-            </div>
-            <div class="d-flex flex-column justify-content-between">
-                <div>Dr. Pepper</div>
-                <div>
-                    <a href="{% url 'settings' %}">Settings</a>
-                    <a href="{% url 'logout' %}">Log out</a>
+
+            {% if request.user.is_authenticated %}
+
+                <div class="border">
+                    <img src="{% static "img/avatar.png" %}" width="50" height="50"/>
                 </div>
-            </div>
+                <div class="d-flex flex-column justify-content-between">
+                    <div>{{ request.user.username }}</div>
+                    <div>
+                        <a href="{% url 'edit-profile' %}">Settings</a>
+                        <a href="{% url 'logout' %}?continue={{ request.path }}">Log out</a>
+                    </div>
+                </div>
+
+            {% else %}
+                <div>
+                    <a href="{% url 'login' %}?continue={{ request.path }}">Log in</a>
+                    <a href="{% url 'signup' %}">Register</a>
+                </div>
+
+            {% endif %}
+
         </div>
     </div>
 </nav>
@@ -57,15 +65,16 @@
             <div class="row">
                 <div class="col">
                     {% for i in popular_tags %}
-                        <a class="badge text-bg-primary text-decoration-none" href="{% url "tag" i.name %}">{{ i.name }}</a>
+                        <a class="badge text-bg-primary text-decoration-none"
+                           href="{% url "tag" i.name %}">{{ i.name }}</a>
                     {% endfor %}
-{#                    <span class="badge text-bg-secondary">python</span>#}
-{#                    <span class="badge text-bg-success">technopark</span>#}
-{#                    <span class="badge text-bg-danger">mysql</span>#}
-{#                    <span class="badge text-bg-warning">postgresql</span>#}
-{#                    <span class="badge text-bg-info">django</span>#}
-{#                    <span class="badge text-bg-light">arc browser</span>#}
-{#                    <span class="badge text-bg-dark">linux</span>#}
+                    {#                    <span class="badge text-bg-secondary">python</span>#}
+                    {#                    <span class="badge text-bg-success">technopark</span>#}
+                    {#                    <span class="badge text-bg-danger">mysql</span>#}
+                    {#                    <span class="badge text-bg-warning">postgresql</span>#}
+                    {#                    <span class="badge text-bg-info">django</span>#}
+                    {#                    <span class="badge text-bg-light">arc browser</span>#}
+                    {#                    <span class="badge text-bg-dark">linux</span>#}
                 </div>
             </div>
             <h3 class="mt-5">Best Members</h3>
