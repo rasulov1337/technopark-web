@@ -5,7 +5,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.urls import reverse, resolve, Resolver404
 from django.views.decorators.http import require_http_methods
-from django.db.utils import IntegrityError
 
 from app.forms import RegisterForm, LoginForm, EditProfileForm, AskForm, AnswerForm
 from app.models import *
@@ -124,16 +123,13 @@ def signup(request):
     # POST
     user_form = RegisterForm(data=request.POST)
     if user_form.is_valid():
-        try:
-            user = user_form.save()
+        user = user_form.save()
 
-            if user:
-                auth.login(request, user)
-                return redirect(reverse('index'))
-            else:
-                user_form.add_error(field=None, error='User saving error:')
-        except IntegrityError:
-            user_form.add_error(field=None, error='User already exists.')
+        if user:
+            auth.login(request, user)
+            return redirect(reverse('index'))
+        else:
+            user_form.add_error(field=None, error='User saving error:')
 
     return render(request, 'signup.html', {'form': user_form})
 

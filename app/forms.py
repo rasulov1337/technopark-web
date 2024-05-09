@@ -28,6 +28,12 @@ class RegisterForm(forms.ModelForm):
             raise ValidationError('Passwords do not match!')
         return self.cleaned_data
 
+    def clean_nickname(self):
+        nickname = self.cleaned_data['nickname']
+        if User.objects.filter(username=nickname).exists():
+            raise ValidationError('Nickname is taken!')
+        return nickname
+
     def save(self, commit=True):
         data = self.cleaned_data
 
