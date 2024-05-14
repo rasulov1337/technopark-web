@@ -37,13 +37,15 @@
         {% include "layouts/answer.html" with item=answer %}
     {% endfor %}
 
-    <hr class="mt-0">
-
-    <form method="post" action="">
+    {% if user.is_authenticated %}
+        <hr class="mt-0">
         {% csrf_token %}
-        {% bootstrap_form form %}
-        <button class="btn btn-secondary">Answer</button>
-    </form>
+        <form method="post" action="">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button class="btn btn-secondary">Answer</button>
+        </form>
+    {% endif %}
 
     <script src="{% static "js/question-like.js" %}"></script>
     {% include 'layouts/pagination.html' with page_obj=answers %}
