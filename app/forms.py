@@ -47,7 +47,7 @@ class RegisterForm(forms.ModelForm):
 class EditProfileForm(forms.ModelForm):
     email = forms.EmailField(required=True)
     username = forms.CharField(required=True)
-    avatar = forms.ImageField(required=True)
+    avatar = forms.ImageField(required=False)
 
     class Meta:
         model = User
@@ -75,7 +75,8 @@ class EditProfileForm(forms.ModelForm):
         self.user.email = data['email']
 
         self.user.profile.nickname = data['username']
-        self.user.profile.avatar = data['avatar']
+        if data['avatar']:
+            self.user.profile.avatar = data['avatar']
 
         if commit:
             self.user.save()
