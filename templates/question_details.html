@@ -7,7 +7,7 @@
         <div class="row g-0">
             <div class="col-3 p-2 me-3">
                 <div class="border w-100 mb-3 ratio ratio-1x1">
-                    <img src="{% static question.author.avatar_img %}" class="img-fluid rounded-start" alt="avatar"/>
+                    <img src="{{ question.author.avatar.url }}" class="img-fluid rounded-start" alt="avatar"/>
                 </div>
                 <div class="input-group flex-nowrap w-50">
                     <input type="number" value="{{ question.score }}" class="form-control"/>

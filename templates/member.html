@@ -1,5 +1,4 @@
 {% extends 'layouts/base.html' %}
-{% load static %}
 
 {% block content %}
 
@@ -22,11 +21,7 @@
             </div>
             <div class="col-7 d-flex flex-column gap-2">
                 <div class="border ratio ratio-1x1 w-50 m-0">
-                    {% if profile.avatar %}
-                        <img class="w-100 h-100" src="{{ profile.avatar.url }}" alt="avatar">
-                    {% else %}
-                        <img class="w-100 h-100" src="{% static "img/avatar.png" %}" alt="avatar">
-                    {% endif %}
+                    <img class="w-100 h-100" src="{{ profile.avatar.url }}" alt="avatar">
                 </div>
             </div>
         </div>
