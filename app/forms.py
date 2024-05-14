@@ -16,8 +16,6 @@ class RegisterForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     confirm_password = forms.CharField(widget=forms.PasswordInput)
 
-    # image = forms.ImageField(required=False)
-
     class Meta:
         model = Profile
         fields = ['nickname']
@@ -49,11 +47,11 @@ class RegisterForm(forms.ModelForm):
 class EditProfileForm(forms.ModelForm):
     email = forms.EmailField(required=True)
     username = forms.CharField(required=True)
-    avatar = forms.ImageField(required=False)
+    avatar = forms.ImageField(required=True)
 
     class Meta:
         model = User
-        fields = ['email', 'avatar']
+        fields = ['email']
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
@@ -77,6 +75,7 @@ class EditProfileForm(forms.ModelForm):
         self.user.email = data['email']
 
         self.user.profile.nickname = data['username']
+        self.user.profile.avatar = data['avatar']
 
         if commit:
             self.user.save()

@@ -4,7 +4,7 @@
 
     <h1>Registration</h1>
 
-    <form action="" method="post" class="w-100 d-flex flex-column gap-3">
+    <form action="" method="post" class="w-100 d-flex flex-column gap-3" enctype="multipart/form-data">
         {% csrf_token %}
         {% bootstrap_form form %}
         <button type="submit" class="btn btn-outline-primary col-2 ms-1">Register!</button>

@@ -27,7 +27,7 @@ class ProfileManager(models.Manager):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar_img = models.ImageField(null=True, blank=True, upload_to='uploads/', default='img/avatar.png')
+    avatar = models.ImageField(null=True, blank=True, upload_to='images')
     nickname = models.CharField(max_length=200)
     created_date = models.DateTimeField(auto_now_add=True)
     last_active = models.DateTimeField(auto_now=True)

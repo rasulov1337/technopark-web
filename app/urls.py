@@ -1,6 +1,8 @@
+from django.conf.urls.static import static
 from django.urls import path
 
 from app import views
+from askme_rasulov import settings
 
 urlpatterns = [
     path('member/<str:member_nickname>', views.member, name='member'),
@@ -14,3 +16,6 @@ urlpatterns = [
     path('hot', views.hot, name='hot'),
     path('question/<int:question_id>', views.question, name='question')
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

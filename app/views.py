@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.urls import reverse, resolve, Resolver404
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_GET
 
 from app.forms import RegisterForm, LoginForm, EditProfileForm, AskForm, AnswerForm
 from app.models import *
@@ -30,6 +30,7 @@ def paginate(objects_list, request, per_page=5):
     return page_object
 
 
+@require_GET
 def index(request):
     page_object = paginate(Question.objects.new(), request)
 
@@ -38,12 +39,14 @@ def index(request):
     })
 
 
+@require_GET
 def hot(request):
     page_object = paginate(Question.objects.hot(), request)
 
     return render(request, 'hot.html', {'questions': page_object})
 
 
+@require_GET
 def tag(request, tag_id):
     item = get_object_or_404(Tag, name=tag_id)
     page_object = paginate(Question.objects.by_tag(tag_id), request)
@@ -157,7 +160,7 @@ def edit_profile(request):
         form = EditProfileForm(user=request.user)
         return render(request, 'settings.html', {'form': form})
 
-    form = EditProfileForm(data=request.POST, user=request.user)
+    form = EditProfileForm(data=request.POST, user=request.user, files=request.FILES)
     if form.is_valid():
         profile = form.save()
         if profile:
@@ -180,6 +183,7 @@ def logout(request):
     return redirect(redirect_page)
 
 
+@require_GET
 def member(request, member_nickname):
     profile = get_object_or_404(Profile, nickname=member_nickname)
     return render(request, 'member.html', {'profile': profile})

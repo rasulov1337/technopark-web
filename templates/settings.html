@@ -6,7 +6,7 @@
 
     <h1 class="mb-4">Settings: Dr. Pepper</h1>
 
-    <form action="" method="post" class="w-100 d-flex flex-column gap-3">
+    <form action="" method="post" class="w-100 d-flex flex-column gap-3" enctype="multipart/form-data">
         {% csrf_token %}
         {% bootstrap_form form %}
 
