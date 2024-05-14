@@ -9,8 +9,10 @@
                 <div class="border w-100 mb-3 ratio ratio-1x1">
                     <img src="{{ question.author.avatar.url }}" class="img-fluid rounded-start" alt="avatar"/>
                 </div>
-                <div class="input-group flex-nowrap w-50">
-                    <input type="number" value="{{ question.score }}" class="form-control"/>
+                <div class="question-like-control input-group flex-nowrap w-75" data-question-id="{{ question.id }}">
+                    <button class="like-btn btn btn-outline-success btn-sm">👍</button>
+                    <span class="form-control like-counter">{{ question.score }}</span>
+                    <button class="dislike-btn btn btn-outline-danger btn-sm">👎</button>
                 </div>
             </div>
             <div class="col">
@@ -43,5 +45,6 @@
         <button class="btn btn-secondary">Answer</button>
     </form>
 
+    <script src="{% static "js/question-like.js" %}"></script>
     {% include 'layouts/pagination.html' with page_obj=answers %}
 {% endblock %}

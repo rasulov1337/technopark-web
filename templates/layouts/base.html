@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html lang="en" class="h-100">
 
@@ -66,13 +67,6 @@
                         <a class="badge text-bg-primary text-decoration-none"
                            href="{% url "tag" i.name %}">{{ i.name }}</a>
                     {% endfor %}
-                    {#                    <span class="badge text-bg-secondary">python</span>#}
-                    {#                    <span class="badge text-bg-success">technopark</span>#}
-                    {#                    <span class="badge text-bg-danger">mysql</span>#}
-                    {#                    <span class="badge text-bg-warning">postgresql</span>#}
-                    {#                    <span class="badge text-bg-info">django</span>#}
-                    {#                    <span class="badge text-bg-light">arc browser</span>#}
-                    {#                    <span class="badge text-bg-dark">linux</span>#}
                 </div>
             </div>
             <h3 class="mt-5">Best Members</h3>

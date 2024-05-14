@@ -5,8 +5,10 @@
     <h1>Tag: {{ tag }}</h1>
 
     {% for q in questions %}
-    {% include 'layouts/question.html' with item=q %}
+        {% include 'layouts/question.html' with item=q %}
     {% endfor %}
     
+    <script src="{% static "js/question-like.js" %}"></script>
+
     {% include "layouts/pagination.html" with page_obj=questions %}
 {% endblock %}

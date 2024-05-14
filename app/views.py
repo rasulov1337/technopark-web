@@ -1,13 +1,16 @@
 from django.contrib import auth
 from django.contrib.auth import authenticate, login as django_auth_login
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.urls import reverse, resolve, Resolver404
-from django.views.decorators.http import require_http_methods, require_GET
+from django.views.decorators.http import require_http_methods, require_GET, require_POST
 
 from app.forms import RegisterForm, LoginForm, EditProfileForm, AskForm, AnswerForm
 from app.models import *
+
+import json
 
 ANSWERS_PER_PAGE = 5
 
@@ -187,3 +190,28 @@ def logout(request):
 def member(request, member_nickname):
     profile = get_object_or_404(Profile, nickname=member_nickname)
     return render(request, 'member.html', {'profile': profile})
+
+
+@login_required
+@require_POST
+def like_question(request):
+    body = json.loads(request.body)
+    question = get_object_or_404(Question, pk=body['questionId'])
+    profile = get_object_or_404(Profile, id=request.user.profile.id)
+
+    question_like = QuestionLike.objects.filter(question=question, author=profile)
+    score_delta = 1 if body['isLike'] else -1
+
+    if question_like.exists():
+        question.score -= question_like.first().status
+        question_like.delete()
+
+    question_like = QuestionLike.objects.create(author=profile, question=question, status=score_delta)
+    question_like.save()
+
+    print(question.score, score_delta)
+    question.score += score_delta
+    question.save()
+    return JsonResponse({
+        'likes_count': question.score,
+    })
