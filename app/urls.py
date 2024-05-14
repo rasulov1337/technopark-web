@@ -5,7 +5,9 @@ from app import views
 from askme_rasulov import settings
 
 urlpatterns = [
-    path('like_question/', views.like_question, name='like_question'),
+    path('mark-answer/', views.mark_answer, name='mark-answer'),
+    path('like-answer/', views.like_answer, name='like-answer'),
+    path('like-question/', views.like_question, name='like-question'),
     path('member/<str:member_nickname>', views.member, name='member'),
     path('logout', views.logout, name='logout'),
     path('profile/edit', views.edit_profile, name='edit-profile'),

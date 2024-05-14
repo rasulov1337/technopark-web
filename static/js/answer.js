@@ -19,21 +19,21 @@ function getCookie(name) {
 
 
 function main() {
-    const likeControlElements = document.querySelectorAll('.question-like-control')
+    const likeControlElements = document.querySelectorAll('.answer-like-control')
     for (const element of likeControlElements) {
         const likeBtn = element.getElementsByClassName('like-btn')[0]
         const counter = element.getElementsByClassName('like-counter')[0]
         const dislikeBtn = element.getElementsByClassName('dislike-btn')[0]
-        const questionId = element.dataset.questionId
+        const answerId = element.dataset.answerId
 
-        function likeOrDislikeQuestion(isLike) {
-            const request = new Request(`/like-question/`, {
+        function likeOrDislikeAnswer(isLike) {
+            const request = new Request(`/like-answer/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')
                 },
                 body: JSON.stringify({
-                    questionId: questionId,
+                    answerId: answerId,
                     isLike: isLike
                 })
             })
@@ -44,8 +44,28 @@ function main() {
                 })
         }
 
-        likeBtn.onclick = () => likeOrDislikeQuestion(true)
-        dislikeBtn.onclick = () => likeOrDislikeQuestion(false)
+        likeBtn.onclick = () => likeOrDislikeAnswer(true)
+        dislikeBtn.onclick = () => likeOrDislikeAnswer(false)
+    }
+
+    const questionId = document.querySelector('.question-like-control').dataset.questionId
+    const correctAnswerCheckboxes = document.querySelectorAll('.correct-answer-checkbox')
+    for (const checkbox of correctAnswerCheckboxes) {
+        const answerId = checkbox.dataset.answerId
+        checkbox.onchange = () => {
+            const request = new Request(`/mark-answer/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    questionId: questionId,
+                    answerId: answerId,
+                    isCorrect: checkbox.checked
+                })
+            })
+            fetch(request)
+        }
     }
 }
 

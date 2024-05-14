@@ -48,5 +48,7 @@
     {% endif %}
 
     <script src="{% static "js/question-like.js" %}"></script>
+    <script src="{% static "js/answer.js" %}"></script>
+
     {% include 'layouts/pagination.html' with page_obj=answers %}
 {% endblock %}

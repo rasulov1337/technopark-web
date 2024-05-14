@@ -4,17 +4,22 @@
             <div class="border w-100 mb-3 ratio ratio-1x1">
                 <img src="{{ item.author.avatar.url }}" class="img-fluid rounded-start" alt="avatar"/>
             </div>
-            <div class="input-group flex-nowrap w-75">
-                <input type="number" value="{{ item.score }}" class="form-control"/>
+            <div class="answer-like-control input-group flex-nowrap w-100" data-answer-id="{{ item.id }}">
+                <button class="like-btn btn btn-outline-success btn-sm">👍</button>
+                <span class="form-control like-counter">{{ item.score }}</span>
+                <button class="dislike-btn btn btn-outline-danger btn-sm">👎</button>
             </div>
         </div>
         <div class="col">
             <div class="h-100 card-body">
                 <p class="card-text">{{ item.text }}</p>
-                <div class="flex">
-                    <input type="checkbox">
-                    <label>Correct!</label>
-                </div>
+                {% if item.author == request.user.profile %}
+                    <div class="flex">
+                        <input class="correct-answer-checkbox form-check-input" data-answer-id="{{ item.id }}"
+                               type="checkbox" {% if item.status == 'A' %} checked {% endif %}>
+                        <label class="form-check-label">Correct!</label>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

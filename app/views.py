@@ -1,7 +1,9 @@
+from json import JSONDecodeError
+
 from django.contrib import auth
 from django.contrib.auth import authenticate, login as django_auth_login
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.urls import reverse, resolve, Resolver404
@@ -192,15 +194,23 @@ def member(request, member_nickname):
     return render(request, 'member.html', {'profile': profile})
 
 
-@login_required
 @require_POST
 def like_question(request):
-    body = json.loads(request.body)
-    question = get_object_or_404(Question, pk=body['questionId'])
-    profile = get_object_or_404(Profile, id=request.user.profile.id)
+    if not request.user.is_authenticated:
+        return HttpResponse('Unauthorized', status=401)
+
+    try:
+        body = json.loads(request.body)
+        question = get_object_or_404(Question, pk=body['questionId'])
+        profile = get_object_or_404(Profile, id=request.user.profile.id)
+    except JSONDecodeError:
+        return HttpResponseBadRequest('Bad JSON')
 
     question_like = QuestionLike.objects.filter(question=question, author=profile)
     score_delta = 1 if body['isLike'] else -1
+
+    if question_like.exists() and question_like.first().status == score_delta:
+        return HttpResponse('Already Liked/Disliked', status=409)
 
     if question_like.exists():
         question.score -= question_like.first().status
@@ -209,9 +219,61 @@ def like_question(request):
     question_like = QuestionLike.objects.create(author=profile, question=question, status=score_delta)
     question_like.save()
 
-    print(question.score, score_delta)
     question.score += score_delta
     question.save()
     return JsonResponse({
-        'likes_count': question.score,
+        'score': question.score,
     })
+
+
+@require_POST
+def like_answer(request):
+    if not request.user.is_authenticated:
+        return HttpResponse('Unauthorized', status=401)
+
+    try:
+        body = json.loads(request.body)
+        answer = get_object_or_404(Answer, pk=body['answerId'])
+        profile = get_object_or_404(Profile, id=request.user.profile.id)
+    except JSONDecodeError:
+        return HttpResponseBadRequest('Bad JSON')
+
+    answer_like = AnswerLike.objects.filter(answer=answer, author=profile)
+    score_delta = 1 if body['isLike'] else -1
+
+    if answer_like.exists() and answer_like.first().status == score_delta:
+        return HttpResponse('Already Liked/Disliked', status=409)
+
+    if answer_like.exists():
+        answer.score -= answer_like.first().status
+        answer_like.delete()
+
+    answer_like = AnswerLike.objects.create(author=profile, answer=answer, status=score_delta)
+    answer_like.save()
+
+    answer.score += score_delta
+    answer.save()
+    return JsonResponse({
+        'score': answer.score,
+    })
+
+
+@require_POST
+def mark_answer(request):
+    if not request.user.is_authenticated:
+        return HttpResponse('Unauthorized', status=401)
+
+    try:
+        body = json.loads(request.body)
+        answer = get_object_or_404(Answer, pk=body['answerId'])
+        question = get_object_or_404(Question, pk=body['questionId'])
+        is_correct = body['isCorrect']
+    except KeyError or JSONDecodeError:
+        return HttpResponseBadRequest('Bad JSON')
+
+    if question.author.id != request.user.profile.id:
+        return HttpResponseBadRequest('Only author of the question is able to mark answer as correct')
+
+    answer.status = 'A' if is_correct else 'S'
+    answer.save()
+    return HttpResponse('Marked', status=200)
