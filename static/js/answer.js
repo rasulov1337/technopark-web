@@ -30,7 +30,8 @@ function main() {
             const request = new Request(`/like-answer/`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
                 },
                 body: JSON.stringify({
                     answerId: answerId,
@@ -56,7 +57,8 @@ function main() {
             const request = new Request(`/mark-answer/`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
                 },
                 body: JSON.stringify({
                     questionId: questionId,

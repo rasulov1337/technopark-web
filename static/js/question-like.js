@@ -30,7 +30,8 @@ function main() {
             const request = new Request(`/like-question/`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
                 },
                 body: JSON.stringify({
                     questionId: questionId,
