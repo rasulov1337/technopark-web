@@ -11,10 +11,10 @@ class QuestionManager(models.Manager):
         return self.all().order_by('-score', '-answers_counter', 'title')
 
     def new(self):
-        return self.all().order_by('-created_date')
+        return self.all().order_by('-created_date', '-id')
 
     def by_tag(self, tag: str):
-        return self.filter(tags__name=tag)
+        return self.filter(tags__name=tag).order_by('-score', '-answers_counter', 'title')
 
 
 class ProfileManager(models.Manager):

@@ -13,13 +13,16 @@
         <div class="col">
             <div class="h-100 card-body">
                 <p class="card-text">{{ item.text }}</p>
-                {% if item.author == request.user.profile %}
-                    <div class="flex">
-                        <input class="correct-answer-checkbox form-check-input" data-answer-id="{{ item.id }}"
-                               type="checkbox" {% if item.status == 'A' %} checked {% endif %}>
-                        <label class="form-check-label">Correct!</label>
-                    </div>
-                {% endif %}
+                <div class="flex">
+                    <input class="correct-answer-checkbox form-check-input"
+                           data-answer-id="{{ item.id }}"
+                           type="checkbox" {% if item.status == 'A' %} checked {% endif %}
+                            {% if item.author != request.user.profile %}
+                           disabled
+                            {% endif %}
+                    >
+                    <label class="form-check-label">Correct!</label>
+                </div>
             </div>
         </div>
     </div>

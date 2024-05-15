@@ -54,7 +54,7 @@ def hot(request):
 @require_GET
 def tag(request, tag_id):
     item = get_object_or_404(Tag, name=tag_id)
-    page_object = paginate(Question.objects.by_tag(tag_id), request)
+    page_object = paginate(Question.objects.by_tag(tag_id).order_by('created_date'), request)
 
     return render(request, 'tag.html', {
         'tag': tag_id,
