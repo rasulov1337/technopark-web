@@ -3,7 +3,7 @@ from json import JSONDecodeError
 from django.contrib import auth
 from django.contrib.auth import authenticate, login as django_auth_login
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.urls import reverse, resolve, Resolver404
@@ -205,30 +205,16 @@ def member(request, member_nickname):
 @require_POST
 def like_question(request):
     if not request.user.is_authenticated:
-        return HttpResponse('Unauthorized', status=401)
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
 
     try:
         body = json.loads(request.body)
         question = get_object_or_404(Question, pk=body['questionId'])
-        profile = get_object_or_404(Profile, id=request.user.profile.id)
     except JSONDecodeError:
-        return HttpResponseBadRequest('Bad JSON')
+        return JsonResponse({'error': 'Bad JSON'}, status=400)
 
-    question_like = QuestionLike.objects.filter(question=question, author=profile)
-    score_delta = 1 if body['isLike'] else -1
+    question.toggle_like(request.user.profile, 1 if body['isLike'] else -1)
 
-    if question_like.exists() and question_like.first().status == score_delta:
-        return HttpResponse('Already Liked/Disliked', status=409)
-
-    if question_like.exists():
-        question.score -= question_like.first().status
-        question_like.delete()
-
-    question_like = QuestionLike.objects.create(author=profile, question=question, status=score_delta)
-    question_like.save()
-
-    question.score += score_delta
-    question.save()
     return JsonResponse({
         'score': question.score,
     })
@@ -238,30 +224,16 @@ def like_question(request):
 @require_POST
 def like_answer(request):
     if not request.user.is_authenticated:
-        return HttpResponse('Unauthorized', status=401)
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
 
     try:
         body = json.loads(request.body)
         answer = get_object_or_404(Answer, pk=body['answerId'])
-        profile = get_object_or_404(Profile, id=request.user.profile.id)
     except JSONDecodeError:
-        return HttpResponseBadRequest('Bad JSON')
+        return JsonResponse({'error': 'Bad JSON'}, status=400)
 
-    answer_like = AnswerLike.objects.filter(answer=answer, author=profile)
-    score_delta = 1 if body['isLike'] else -1
+    answer.toggle_like(request.user.profile, 1 if body['isLike'] else -1)
 
-    if answer_like.exists() and answer_like.first().status == score_delta:
-        return HttpResponse('Already Liked/Disliked', status=409)
-
-    if answer_like.exists():
-        answer.score -= answer_like.first().status
-        answer_like.delete()
-
-    answer_like = AnswerLike.objects.create(author=profile, answer=answer, status=score_delta)
-    answer_like.save()
-
-    answer.score += score_delta
-    answer.save()
     return JsonResponse({
         'score': answer.score,
     })
@@ -271,19 +243,17 @@ def like_answer(request):
 @require_POST
 def mark_answer(request):
     if not request.user.is_authenticated:
-        return HttpResponse('Unauthorized', status=401)
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
 
     try:
         body = json.loads(request.body)
         answer = get_object_or_404(Answer, pk=body['answerId'])
         question = get_object_or_404(Question, pk=body['questionId'])
-        is_correct = body['isCorrect']
     except KeyError or JSONDecodeError:
-        return HttpResponseBadRequest('Bad JSON')
+        return JsonResponse({'error': 'Bad JSON'}, status=400)
 
     if question.author.id != request.user.profile.id:
-        return HttpResponseBadRequest('Only author of the question is able to mark answer as correct')
+        return JsonResponse({'error': 'Only author of the question is able to mark answer as correct'}, status=403)
 
-    answer.status = 'A' if is_correct else 'S'
-    answer.save()
-    return HttpResponse('Marked', status=200)
+    answer.toggle_correct()
+    return JsonResponse({'response': 'Marked'}, status=200)

@@ -1,20 +1,5 @@
 from django.contrib.auth.models import User
 from django.db import models
-from datetime import date
-from django.db.models import Count, Sum
-
-
-# Create your models here.
-
-class QuestionManager(models.Manager):
-    def hot(self):
-        return self.all().order_by('-score', '-answers_counter', 'title')
-
-    def new(self):
-        return self.all().order_by('-created_date', '-id')
-
-    def by_tag(self, tag: str):
-        return self.filter(tags__name=tag).order_by('-score', '-answers_counter', 'title')
 
 
 class ProfileManager(models.Manager):
@@ -58,6 +43,17 @@ class Tag(models.Model):
         return self.name
 
 
+class QuestionManager(models.Manager):
+    def hot(self):
+        return self.all().order_by('-score', '-answers_counter', 'title')
+
+    def new(self):
+        return self.all().order_by('-created_date', '-id')
+
+    def by_tag(self, tag: str):
+        return self.filter(tags__name=tag).order_by('-score', '-answers_counter', 'title')
+
+
 class Question(models.Model):
     STATUS_CHOICES = (('S', 'Solved'), ('N', 'Not Solved'))
     status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='N')
@@ -75,6 +71,21 @@ class Question(models.Model):
     def __str__(self):
         return self.title + ' ' + self.get_status_display()
 
+    def toggle_like(self, author, status):
+        assert author
+        assert status == 1 or status == -1
+
+        old_like = QuestionLike.objects.filter(author=author, question=self).first()
+        if old_like:
+            old_like.delete()
+            self.score -= old_like.status
+
+        if old_like is None or old_like.status != status:
+            like = QuestionLike(author=author, question=self, status=status)
+            like.save()
+            self.score += status
+        self.save()
+
 
 class Answer(models.Model):
     STATUS_CHOICES = (('S', 'Suggested'), ('A', 'Accepted'))
@@ -88,6 +99,25 @@ class Answer(models.Model):
 
     def __str__(self):
         return self.text + ' ' + self.get_status_display()
+
+    def toggle_like(self, author, status):
+        assert author
+        assert status == 1 or status == -1
+
+        old_like = AnswerLike.objects.filter(author=author, answer=self).first()
+        if old_like:
+            old_like.delete()
+            self.score -= old_like.status
+
+        if old_like is None or old_like.status != status:
+            like = AnswerLike(author=author, answer=self, status=status)
+            like.save()
+            self.score += status
+        self.save()
+
+    def toggle_correct(self):
+        self.status = 'A' if self.status == 'S' else 'S'
+        self.save()
 
 
 class QuestionLikeManager(models.Manager):

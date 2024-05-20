@@ -62,8 +62,7 @@ function main() {
                 },
                 body: JSON.stringify({
                     questionId: questionId,
-                    answerId: answerId,
-                    isCorrect: checkbox.checked
+                    answerId: answerId
                 })
             })
             fetch(request)
