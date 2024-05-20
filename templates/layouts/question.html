@@ -19,10 +19,12 @@
                 <div class="row">
                     <a class="col-3" href="{% url "question" item.id %}">answers ({{ item.answers_counter }})</a>
                     <div class="col-8">
-                        <span>Tags:</span>
-                        {% for i in item.tags.all %}
-                            <a href="{% url "tag" i %}">{{ i }}</a>
-                        {% endfor %}
+                        {% if item.tags.exists %}
+                            <span>Tags:</span>
+                            {% for i in item.tags.all %}
+                                <a class="badge rounded-pill text-bg-success" href="{% url "tag" i %}">{{ i }}</a>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                 </div>
             </div>

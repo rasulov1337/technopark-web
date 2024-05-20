@@ -22,10 +22,12 @@
                         {{ question.text }}
                     </p>
                     <div class="col-8">
-                        <span>Tags:</span>
-                        {% for tag in question.tags.all %}
-                            <a href="{% url "tag" tag %}">{{ tag }}</a>
-                        {% endfor %}
+                        {% if question.tags.exists %}
+                            <span>Tags:</span>
+                            {% for i in question.tags.all %}
+                                <a class="badge rounded-pill text-bg-success" href="{% url "tag" i %}">{{ i }}</a>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                 </div>
             </div>

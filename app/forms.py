@@ -101,7 +101,7 @@ class AskForm(forms.ModelForm):
     def save(self, commit=True):
         data = self.cleaned_data
         question = Question.objects.create(title=data['title'], text=data['text'], author=self.profile)
-        if data.get('tags', None) is not None:
+        if data.get('tags', None) is not None and data.get('tags').strip():
             for tag in data['tags'].split(','):
                 tag_from_db = Tag.objects.filter(name=tag)
                 if not tag_from_db.exists():
