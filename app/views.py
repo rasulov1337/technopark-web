@@ -7,6 +7,7 @@ from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.urls import reverse, resolve, Resolver404
+from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods, require_GET, require_POST
 
 from app.forms import RegisterForm, LoginForm, EditProfileForm, AskForm, AnswerForm
@@ -40,7 +41,7 @@ def index(request):
     page_object = paginate(Question.objects.new(), request)
 
     return render(request, 'index.html', {
-        'questions': page_object,
+        'questions': page_object
     })
 
 
@@ -63,6 +64,7 @@ def tag(request, tag_id):
     })
 
 
+@csrf_protect
 @require_http_methods(['GET', 'POST'])
 def question(request, question_id):
     item = get_object_or_404(Question, id=question_id)
@@ -95,6 +97,7 @@ def question(request, question_id):
     })
 
 
+@csrf_protect
 @require_http_methods(['GET', 'POST'])
 def login(request):
     if request.method == 'POST':
@@ -122,6 +125,7 @@ def login(request):
     return render(request, 'login.html', {'form': login_form})
 
 
+@csrf_protect
 @require_http_methods(['GET', 'POST'])
 def signup(request):
     if request.method == 'GET':
@@ -142,6 +146,7 @@ def signup(request):
     return render(request, 'signup.html', {'form': user_form})
 
 
+@csrf_protect
 @login_required
 @require_http_methods(['GET', 'POST'])
 def ask(request):
@@ -159,7 +164,9 @@ def ask(request):
     return render(request, 'ask.html', {'form': form})
 
 
+@csrf_protect
 @login_required
+@require_http_methods(['GET', 'POST'])
 def edit_profile(request):
     if request.method == 'GET':
         form = EditProfileForm(user=request.user)
@@ -194,6 +201,7 @@ def member(request, member_nickname):
     return render(request, 'member.html', {'profile': profile})
 
 
+@csrf_protect
 @require_POST
 def like_question(request):
     if not request.user.is_authenticated:
@@ -226,6 +234,7 @@ def like_question(request):
     })
 
 
+@csrf_protect
 @require_POST
 def like_answer(request):
     if not request.user.is_authenticated:
@@ -258,6 +267,7 @@ def like_answer(request):
     })
 
 
+@csrf_protect
 @require_POST
 def mark_answer(request):
     if not request.user.is_authenticated:
