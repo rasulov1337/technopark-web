@@ -38,8 +38,19 @@ function main() {
                     isLike: isLike
                 })
             })
+
             fetch(request)
-                .then((response) => response.json())
+                .then((response) => {
+                    if (!response.ok) {
+                        return response.json().then((errorData) => {
+                            throw new Error(errorData.error);
+                        });
+                    }
+                    return response.json()
+                })
+                .catch((error) => {
+                    alert(error.message)
+                })
                 .then((data) => {
                     counter.innerHTML = data.score
                 })

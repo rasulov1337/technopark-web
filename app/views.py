@@ -100,8 +100,10 @@ def question(request, question_id):
         })
 
     if request.method == 'DELETE':
-        item.delete()
-        return HttpResponse(status=204)
+        if request.user.is_authenticated and item.author.id == request.user.profile.id:
+            item.delete()
+            return JsonResponse({'response': 'Successfully deleted.'}, status=200)
+        return JsonResponse({'error': 'You are not allowed to delete this question.'}, status=403)
 
 
 @csrf_protect

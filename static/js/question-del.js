@@ -13,8 +13,15 @@ function main() {
         })
 
         fetch(request)
-            .then((response) => document.location.href = '/',
-                (error) => alert('Error: ' + error))
+            .then((response) => {
+                if (!response.ok) {
+                    return response.json().then((errorData) => {
+                        throw new Error(errorData.error);
+                    });
+                }
+                document.location.href = '/'
+            })
+            .catch((error) => alert(error.message))
     }
 }
 

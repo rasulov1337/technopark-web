@@ -40,15 +40,17 @@ function main() {
             })
             fetch(request)
                 .then((response) => {
-                    if (!response.ok)
-                        throw new Error(response.statusText)
+                    if (!response.ok) {
+                        return response.json().then((errorData) => {
+                            throw new Error(errorData.error);
+                        });
+                    }
                     return response.json()
                 })
                 .catch((error) => {
-                    alert(error)
+                    alert(error.message)
                 })
                 .then((data) => {
-                    console.log(data)
                     counter.innerHTML = data.score
                 })
         }
