@@ -87,6 +87,11 @@ class Question(models.Model):
         self.save()
 
 
+class AnswerManager(models.Manager):
+    def by_question(self, question_id):
+        return self.filter(question=question_id).order_by('created_date', 'id')
+
+
 class Answer(models.Model):
     STATUS_CHOICES = (('S', 'Suggested'), ('A', 'Accepted'))
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
@@ -96,6 +101,8 @@ class Answer(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     score = models.IntegerField(default=0)
+
+    objects = AnswerManager()
 
     def __str__(self):
         return self.text + ' ' + self.get_status_display()

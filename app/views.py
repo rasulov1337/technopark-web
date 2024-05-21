@@ -36,6 +36,17 @@ def paginate(objects_list, request, per_page=5):
     return page_object
 
 
+def get_answer_page_index(question_id, answer_id):
+    curr_answer_index = 1
+    for i in Answer.objects.by_question(question_id):
+        if i.id == answer_id:
+            break
+        curr_answer_index += 1
+
+    page = curr_answer_index // ANSWERS_PER_PAGE + 1
+    return page
+
+
 @require_GET
 def index(request):
     page_object = paginate(Question.objects.new(), request)
@@ -68,7 +79,7 @@ def tag(request, tag_id):
 @require_http_methods(['GET', 'POST', 'DELETE'])
 def question(request, question_id):
     item = get_object_or_404(Question, id=question_id)
-    page_object = paginate(Answer.objects.filter(question=question_id), request, ANSWERS_PER_PAGE)
+    page_object = paginate(Answer.objects.by_question(item.id), request, ANSWERS_PER_PAGE)
 
     if request.method == 'POST':
         if request.user.is_anonymous:
@@ -77,15 +88,8 @@ def question(request, question_id):
         if ans_form.is_valid():
             ans = ans_form.save()
 
-            if ans:  # TODO: перенести логику куда-нибудь
-                curr_answer_index = 0
-                for i in Answer.objects.filter(question=question_id):
-                    if i.id == ans.id:
-                        break
-                    curr_answer_index += 1
-
-                page = curr_answer_index // ANSWERS_PER_PAGE + 1
-
+            if ans:
+                page = get_answer_page_index(question_id, ans.id)
                 return redirect(reverse('question', args=[item.id]) + '?page=' + str(page) + '#' + str(ans.id))
             else:
                 ans_form.add_error(field=None, error='Answer saving error:')
