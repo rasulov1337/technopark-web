@@ -49,7 +49,7 @@ function main() {
         dislikeBtn.onclick = () => likeOrDislikeAnswer(false)
     }
 
-    const questionId = document.querySelector('.question-like-control').dataset.questionId
+    const questionId = document.querySelector('.question').dataset.questionId
     const correctAnswerCheckboxes = document.querySelectorAll('.correct-answer-checkbox')
     for (const checkbox of correctAnswerCheckboxes) {
         const answerId = checkbox.dataset.answerId

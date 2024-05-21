@@ -19,11 +19,11 @@ function getCookie(name) {
 
 
 function main() {
-    const likeControlElements = document.querySelectorAll('.question-like-control')
-    for (const element of likeControlElements) {
-        const likeBtn = element.getElementsByClassName('like-btn')[0]
-        const counter = element.getElementsByClassName('like-counter')[0]
-        const dislikeBtn = element.getElementsByClassName('dislike-btn')[0]
+    const questions = document.querySelectorAll('.question')
+    for (const element of questions) {
+        const likeBtn = element.querySelector('.like-btn')
+        const counter = element.querySelector('.like-counter')
+        const dislikeBtn = element.querySelector('.dislike-btn')
         const questionId = element.dataset.questionId
 
         function likeOrDislikeQuestion(isLike) {
@@ -39,8 +39,16 @@ function main() {
                 })
             })
             fetch(request)
-                .then((response) => response.json())
+                .then((response) => {
+                    if (!response.ok)
+                        throw new Error(response.statusText)
+                    return response.json()
+                })
+                .catch((error) => {
+                    alert(error)
+                })
                 .then((data) => {
+                    console.log(data)
                     counter.innerHTML = data.score
                 })
         }

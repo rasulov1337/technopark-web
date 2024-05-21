@@ -3,7 +3,7 @@ from json import JSONDecodeError
 from django.contrib import auth
 from django.contrib.auth import authenticate, login as django_auth_login
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.urls import reverse, resolve, Resolver404
@@ -65,17 +65,19 @@ def tag(request, tag_id):
 
 
 @csrf_protect
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'POST', 'DELETE'])
 def question(request, question_id):
     item = get_object_or_404(Question, id=question_id)
     page_object = paginate(Answer.objects.filter(question=question_id), request, ANSWERS_PER_PAGE)
 
-    if request.method == 'POST' and request.user.is_authenticated:
+    if request.method == 'POST':
+        if request.user.is_anonymous:
+            return redirect('login') + '?continue=' + request.path
         ans_form = AnswerForm(profile=request.user.profile, question=item, data=request.POST)
         if ans_form.is_valid():
             ans = ans_form.save()
 
-            if ans:
+            if ans:  # TODO: перенести логику куда-нибудь
                 curr_answer_index = 0
                 for i in Answer.objects.filter(question=question_id):
                     if i.id == ans.id:
@@ -87,14 +89,19 @@ def question(request, question_id):
                 return redirect(reverse('question', args=[item.id]) + '?page=' + str(page) + '#' + str(ans.id))
             else:
                 ans_form.add_error(field=None, error='Answer saving error:')
-    else:
+    elif request.method == 'GET':
         ans_form = AnswerForm(profile=request.user, question=item)
 
-    return render(request, 'question_details.html', {
-        'question': item,
-        'answers': page_object,
-        'form': ans_form,
-    })
+    if request.method == 'GET' or request.method == 'POST':
+        return render(request, 'question_details.html', {
+            'question': item,
+            'answers': page_object,
+            'form': ans_form,
+        })
+
+    if request.method == 'DELETE':
+        item.delete()
+        return HttpResponse(status=204)
 
 
 @csrf_protect

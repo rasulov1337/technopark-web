@@ -3,13 +3,13 @@
 {% load static %}
 
 {% block content %}
-    <article class="cardmb-3 w-100">
+    <article class="cardmb-3 w-100 question" data-question-id="{{ question.id }}">
         <div class="row g-0">
             <div class="col-3 p-2 me-3">
                 <div class="border w-100 mb-3 ratio ratio-1x1">
                     <img src="{{ question.author.avatar.url }}" class="img-fluid rounded-start" alt="avatar"/>
                 </div>
-                <div class="question-like-control input-group flex-nowrap w-75" data-question-id="{{ question.id }}">
+                <div class="input-group flex-nowrap w-75">
                     <button class="like-btn btn btn-outline-success btn-sm">👍</button>
                     <span class="form-control like-counter">{{ question.score }}</span>
                     <button class="dislike-btn btn btn-outline-danger btn-sm">👎</button>
@@ -27,6 +27,10 @@
                             {% for i in question.tags.all %}
                                 <a class="badge rounded-pill text-bg-success" href="{% url "tag" i %}">{{ i }}</a>
                             {% endfor %}
+                        {% endif %}
+
+                        {% if question.author == request.user.profile %}
+                            <button class="btn btn-outline-danger btn-sm del-question-btn">Delete</button>
                         {% endif %}
                     </div>
                 </div>
@@ -51,6 +55,7 @@
 
     <script src="{% static "js/question-like.js" %}"></script>
     <script src="{% static "js/answer.js" %}"></script>
+    <script src="{% static "js/question-del.js" %}"></script>
 
     {% include 'layouts/pagination.html' with page_obj=answers %}
 {% endblock %}
