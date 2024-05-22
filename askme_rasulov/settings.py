@@ -81,9 +81,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'technopark-web',
         'USER': 'postgres',
-        'PASSWORD': '1',
-        'HOST': 'localhost',
-        'PORT': '5555'
+        'PASSWORD': '1234',
+        'HOST': '172.21.53.39',
+        'PORT': '5433'
     }
 }
 
@@ -120,6 +120,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'static/'  # If run on EXTERNAL application server, and you want to serve static files from
+# that server
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

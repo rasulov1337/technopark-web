@@ -1,0 +1,1 @@
+curl -d "{\"meow\": \"test\", \"something\": \"beautiful\", \"val\": 123}" 127.0.0.1:8081/

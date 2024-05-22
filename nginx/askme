@@ -1,0 +1,36 @@
+upstream askme {
+	server 127.0.0.1:8000;
+}
+
+server {
+	listen 80 default_server;
+	server_name askme.com;
+
+	access_log /var/log/nginx/askme_access.log;
+	error_log /var/log/nginx/askme_error.log;
+
+	# Куда проксируем
+
+	location ^~ /uploads/ {
+		root /home/student/web/media/;
+	}
+
+
+	location ~* \.(js|css|jpg|png|jpeg)$ {
+		root /home/student/web/;
+		expires 30d;
+		add_header Cache-Control "public";  # public = browsers + CDN
+		#proxy_cache mycache;
+		#proxy_cache_valid 200 302 10m;
+		#proxy_cache_valid 404 502 1m;
+	}
+
+	location / {
+		proxy_pass http://askme;
+		proxy_set_header Host $host;
+		#proxy_cache mycache;
+		#proxy_cache_valid 200 302 10m;
+		#proxy_cache_valid 404 502 1m;
+	}
+
+}
