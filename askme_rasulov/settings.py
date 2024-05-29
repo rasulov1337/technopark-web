@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -120,7 +121,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'static/'  # If run on EXTERNAL application server, and you want to serve static files from
+
+RUNNING_DEVSERVER = 'runserver' in sys.argv
+
+if not RUNNING_DEVSERVER:
+    STATIC_ROOT = BASE_DIR / 'static/'  # If run on EXTERNAL application server, and you want to serve static files from
 # that server
 
 # Default primary key field type
@@ -137,8 +142,16 @@ CENTRIFUGO_WS_URL = "ws://localhost:8010/connection/websocket"
 CENTRIFUGO_API_URL = 'http://localhost:8010/api'
 CENTRIFUGO_API_KEY = 'ea8fb4b0-ef57-4caf-b7c1-3cd4c05bff7f'
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
+if RUNNING_DEVSERVER:
+    STATICFILES_DIRS = [
+        BASE_DIR / 'static',
+    ]
 
 LOGIN_URL = '/login'
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": "/var/tmp/askme_app_cache",
+    }
+}

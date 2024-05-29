@@ -1,9 +1,27 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Count, Sum, F, Q
+from django.utils import timezone
+from datetime import timedelta
 
 
 class ProfileManager(models.Manager):
     def best(self):
+        now = timezone.now()
+        one_week_ago = now - timedelta(days=7)
+
+        # TODO: FIX ME
+        # return (self.annotate(
+        #     questions_score=Sum(
+        #         F('questions__score'),
+        #         filter=Q(question__created_date__gte=one_week_ago)
+        #     ),
+        #     answers_score=Sum(
+        #         F('answers__score'),
+        #         filter=Q(answer__created_date__gte=one_week_ago)
+        #     ))
+        #     .annotate(total_score=F('questions_score') + F('answers_score'))
+        #     .order_by('-total_score'))[:10]
         return self.all().order_by('-score')[:5]
 
     def get_by_nickname(self, nickname):
@@ -28,7 +46,10 @@ class Profile(models.Model):
 
 class TagManager(models.Manager):
     def popular(self):
-        return self.all().order_by('-questions_counter')[:5]
+        three_months_ago = timezone.now() - timedelta(days=90)
+        # return self.filter(question__created_date__gte=three_months_ago).order_by('-questions_counter')[:10]
+        return self.filter(question__created_date__gte=three_months_ago).annotate(
+            question_counter=Count('question')).order_by('-question_counter')[:10]
 
 
 class Tag(models.Model):
