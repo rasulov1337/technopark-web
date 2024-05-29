@@ -3,6 +3,8 @@
 {% load static %}
 
 {% block content %}
+    <div class="centrifugo-data" data-url="{{ centrifugo.url }}" data-token="{{ centrifugo.token }}" data-ws-channel-name="{{ ws_channel_name }}">
+    </div>
     <article class="cardmb-3 w-100 question" data-question-id="{{ question.id }}">
         <div class="row g-0">
             <div class="col-3 p-2 me-3">
@@ -39,9 +41,13 @@
     </article>
     <hr>
 
-    {% for answer in answers %}
-        {% include "layouts/answer.html" with item=answer %}
-    {% endfor %}
+    <article class="answers-container">
+        {% include "layouts/answer.html" %}
+
+        {% for answer in answers %}
+            {% include "layouts/answer.html" with item=answer %}
+        {% endfor %}
+    </article>
 
     {% if user.is_authenticated %}
         <hr class="mt-0">
@@ -56,6 +62,8 @@
     <script src="{% static "js/question-like.js" %}"></script>
     <script src="{% static "js/answer.js" %}"></script>
     <script src="{% static "js/question-del.js" %}"></script>
+    <script src="{% static "js/centrifuge.js" %}"></script>
+    <script src="{% static "js/question-details.js" %}"></script>
 
     {% include 'layouts/pagination.html' with page_obj=answers %}
 {% endblock %}

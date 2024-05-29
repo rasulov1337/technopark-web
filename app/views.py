@@ -1,5 +1,4 @@
 from json import JSONDecodeError
-
 from django.contrib import auth
 from django.contrib.auth import authenticate, login as django_auth_login
 from django.contrib.auth.decorators import login_required
@@ -9,9 +8,14 @@ from django.core.paginator import Paginator
 from django.urls import reverse, resolve, Resolver404
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods, require_GET, require_POST
+from cent import Client, PublishRequest
+
+import jwt
+import time
 
 from app.forms import RegisterForm, LoginForm, EditProfileForm, AskForm, AnswerForm
 from app.models import *
+import askme_rasulov.settings as settings
 
 import json
 
@@ -47,6 +51,22 @@ def get_answer_page_index(question_id, answer_id):
     return page
 
 
+def get_centrifugo_data(user_id):
+    ws_url = settings.CENTRIFUGO_WS_URL
+    secret = settings.CENTRIFUGO_SECRET
+    token = jwt.encode(
+        {'sub': str(user_id), 'exp': int(time.time()) + 10 * 60}, secret, algorithm="HS256"
+    )
+    print(user_id, token)
+
+    return {
+        'centrifugo': {
+            'token': token,
+            'url': ws_url
+        }
+    }
+
+
 @require_GET
 def index(request):
     page_object = paginate(Question.objects.new(), request)
@@ -80,6 +100,7 @@ def tag(request, tag_id):
 def question(request, question_id):
     item = get_object_or_404(Question, id=question_id)
     page_object = paginate(Answer.objects.by_question(item.id), request, ANSWERS_PER_PAGE)
+    ws_channel_name = 'question_' + str(question_id)
 
     if request.method == 'POST':
         if request.user.is_anonymous:
@@ -88,11 +109,20 @@ def question(request, question_id):
         if ans_form.is_valid():
             ans = ans_form.save()
 
-            if ans:
-                page = get_answer_page_index(question_id, ans.id)
-                return redirect(reverse('question', args=[item.id]) + '?page=' + str(page) + '#' + str(ans.id))
-            else:
-                ans_form.add_error(field=None, error='Answer saving error:')
+            # TODO: ОПТИМИЗИРОВАТЬ ВСЕ, ИЗБАВИТЬСЯ ОТ FAT CONTROLLER
+            api_url = settings.CENTRIFUGO_API_URL
+            api_key = settings.CENTRIFUGO_API_KEY
+
+            client = Client(api_url, api_key)
+            request = PublishRequest(channel=ws_channel_name, data={
+                'text': ans.text,
+                'avatarLink': ans.author.avatar.url,
+                'score': ans.score,
+            })
+            client.publish(request)
+
+            page = get_answer_page_index(question_id, ans.id)
+            return redirect(reverse('question', args=[item.id]) + '?page=' + str(page) + '#' + str(ans.id))
     elif request.method == 'GET':
         ans_form = AnswerForm(profile=request.user, question=item)
 
@@ -101,6 +131,8 @@ def question(request, question_id):
             'question': item,
             'answers': page_object,
             'form': ans_form,
+            **get_centrifugo_data(request.user.id),
+            'ws_channel_name': ws_channel_name
         })
 
     if request.method == 'DELETE':

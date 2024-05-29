@@ -82,8 +82,8 @@ DATABASES = {
         'NAME': 'technopark-web',
         'USER': 'postgres',
         'PASSWORD': '1234',
-        'HOST': '172.21.53.39',
-        'PORT': '5433'
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }
 
@@ -130,6 +130,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
+
+# TODO: Мб как-то автоматически считывать config.json?
+CENTRIFUGO_SECRET = "e0ea51dc-6722-4fc9-a853-7a2cca96c2a4"
+CENTRIFUGO_WS_URL = "ws://localhost:8010/connection/websocket"
+CENTRIFUGO_API_URL = 'http://localhost:8010/api'
+CENTRIFUGO_API_KEY = 'ea8fb4b0-ef57-4caf-b7c1-3cd4c05bff7f'
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
