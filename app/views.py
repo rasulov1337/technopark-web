@@ -1,4 +1,4 @@
-from json import JSONDecodeError
+import json
 from django.contrib import auth
 from django.contrib.auth import authenticate, login as django_auth_login
 from django.contrib.auth.decorators import login_required
@@ -8,16 +8,16 @@ from django.core.paginator import Paginator
 from django.urls import reverse, resolve, Resolver404
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods, require_GET, require_POST
-from cent import Client, PublishRequest
+from django.contrib.postgres.search import SearchVector
 
-import jwt
-import time
+# Centrifugo
+from cent import Client, PublishRequest
+import jwt  # Token generation
+import time  # Token generation
 
 from app.forms import RegisterForm, LoginForm, EditProfileForm, AskForm, AnswerForm
 from app.models import *
 import askme_rasulov.settings as settings
-
-import json
 
 ANSWERS_PER_PAGE = 5
 
@@ -255,7 +255,7 @@ def like_question(request):
     try:
         body = json.loads(request.body)
         question = get_object_or_404(Question, pk=body['questionId'])
-    except JSONDecodeError:
+    except json.JSONDecodeError:
         return JsonResponse({'error': 'Bad JSON'}, status=400)
 
     question.toggle_like(request.user.profile, 1 if body['isLike'] else -1)
@@ -274,7 +274,7 @@ def like_answer(request):
     try:
         body = json.loads(request.body)
         answer = get_object_or_404(Answer, pk=body['answerId'])
-    except JSONDecodeError:
+    except json.JSONDecodeError:
         return JsonResponse({'error': 'Bad JSON'}, status=400)
 
     answer.toggle_like(request.user.profile, 1 if body['isLike'] else -1)
@@ -294,7 +294,7 @@ def mark_answer(request):
         body = json.loads(request.body)
         answer = get_object_or_404(Answer, pk=body['answerId'])
         question = get_object_or_404(Question, pk=body['questionId'])
-    except KeyError or JSONDecodeError:
+    except KeyError or json.JSONDecodeError:
         return JsonResponse({'error': 'Bad JSON'}, status=400)
 
     if question.author.id != request.user.profile.id:
@@ -302,3 +302,17 @@ def mark_answer(request):
 
     answer.toggle_correct()
     return JsonResponse({'response': 'Marked'}, status=200)
+
+
+
+@require_GET
+def search(request):
+    search_query = request.GET.get('q', '')
+    print(search_query)
+    questions = Question.objects.annotate(
+        search=SearchVector('title', 'text')
+    ).filter(search=search_query).values('title', 'id')[:10]
+
+    return JsonResponse({
+        'data': [{'title': i['title'], 'id': i['id']} for i in questions]
+    })

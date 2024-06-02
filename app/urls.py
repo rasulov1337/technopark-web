@@ -5,6 +5,7 @@ from app import views
 from askme_rasulov import settings
 
 urlpatterns = [
+    path('search', views.search, name='search'),
     path('mark-answer/', views.mark_answer, name='mark-answer'),
     path('like-answer/', views.like_answer, name='like-answer'),
     path('like-question/', views.like_question, name='like-question'),
@@ -20,6 +21,6 @@ urlpatterns = [
     path('question/<int:question_id>', views.question, name='question')
 ]
 
-# if settings.DEBUG:
-#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-#     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+if settings.RUNNING_DEVSERVER:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_URL)
