@@ -10,19 +10,20 @@ class ProfileManager(models.Manager):
         now = timezone.now()
         one_week_ago = now - timedelta(days=7)
 
-        # TODO: FIX ME
-        # return (self.annotate(
-        #     questions_score=Sum(
-        #         F('questions__score'),
-        #         filter=Q(question__created_date__gte=one_week_ago)
-        #     ),
-        #     answers_score=Sum(
-        #         F('answers__score'),
-        #         filter=Q(answer__created_date__gte=one_week_ago)
-        #     ))
-        #     .annotate(total_score=F('questions_score') + F('answers_score'))
-        #     .order_by('-total_score'))[:10]
-        return self.all().order_by('-score')[:5]
+        return (self.annotate(
+            questions_score=Sum(
+                F('question__score'),
+                filter=Q(question__created_date__gte=one_week_ago),
+                default=0
+            ),
+            answers_score=Sum(
+                F('answer__score'),
+                filter=Q(answer__created_date__gte=one_week_ago),
+                default=0
+            ))
+            .annotate(total_score=F('questions_score') + F('answers_score'))
+            .filter(total_score__gt=0)
+            .order_by('-total_score'))[:10]
 
     def get_by_nickname(self, nickname):
         return self.get(nickname=nickname)
@@ -115,7 +116,7 @@ class AnswerManager(models.Manager):
 
 class Answer(models.Model):
     STATUS_CHOICES = (('S', 'Suggested'), ('A', 'Accepted'))
-    status = models.CharField(max_length=1, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='S')
     text = models.CharField(max_length=200)
     author = models.ForeignKey(Profile, on_delete=models.PROTECT)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)

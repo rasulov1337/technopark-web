@@ -99,7 +99,7 @@ def tag(request, tag_id):
 @require_http_methods(['GET', 'POST', 'DELETE'])
 def question(request, question_id):
     item = get_object_or_404(Question, id=question_id)
-    page_object = paginate(Answer.objects.by_question(item.id), request, ANSWERS_PER_PAGE)
+    answers = paginate(Answer.objects.by_question(item.id), request, ANSWERS_PER_PAGE)
     ws_channel_name = 'question_' + str(question_id)
 
     if request.method == 'POST':
@@ -129,7 +129,7 @@ def question(request, question_id):
     if request.method == 'GET' or request.method == 'POST':
         return render(request, 'question_details.html', {
             'question': item,
-            'answers': page_object,
+            'answers': answers,
             'form': ans_form,
             **get_centrifugo_data(request.user.id),
             'ws_channel_name': ws_channel_name
